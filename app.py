@@ -73,8 +73,8 @@ st.markdown("""
 st.markdown('<div class="promo-banner">💀 WARNING: HALLOWEEN APPROACHES! USE CODE "SPOOKY20" FOR 20% OFF EXTRA & FREE INSTANT DISPATCH! 💀</div>', unsafe_allow_html=True)
 st.write("")
 
-# Main Branding Presentation Layout
-m_col1, m_col2 = st.columns()
+# Main Branding Presentation Layout - FIXED: Added specific arguments to layout columns
+m_col1, m_col2 = st.columns(2)
 with m_col1:
     st.image("https://icons8.com", width=110)
 with m_col2:
