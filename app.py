@@ -27,7 +27,6 @@ st.subheader("Premium Costumes & Apparels — Shipped Straight to Your Door")
 st.write("---")
 
 # 2. DATA MATRIX: MANUALLY ADD YOUR ALIBABA/ALIEXPRESS ITEMS HERE
-# Simply swap out these images and names with items you find on Alibaba!
 @st.cache_data
 def load_alibaba_inventory():
     return [
@@ -39,7 +38,8 @@ def load_alibaba_inventory():
             "retail_price": 39.99,
             "sizes": ["S", "M", "L", "XL"],
             "checkout_url": "https://stripe.com",
-            "tags": "Dresses"
+            "tags": "Dresses",
+            "size_guide_img": "https://unsplash.com" # Replace with your Canva link later
         },
         {
             "id": "HW-002",
@@ -49,7 +49,8 @@ def load_alibaba_inventory():
             "retail_price": 49.95,
             "sizes": ["M", "L", "XL"],
             "checkout_url": "https://stripe.com",
-            "tags": "Full Costumes"
+            "tags": "Full Costumes",
+            "size_guide_img": "https://unsplash.com" # Replace with your Canva link later
         },
         {
             "id": "HW-003",
@@ -59,7 +60,8 @@ def load_alibaba_inventory():
             "retail_price": 29.99,
             "sizes": ["S", "M", "L"],
             "checkout_url": "https://stripe.com",
-            "tags": "Dresses"
+            "tags": "Dresses",
+            "size_guide_img": "https://unsplash.com" # Replace with your Canva link later
         }
     ]
 
@@ -70,14 +72,12 @@ st.sidebar.header("Filter Collection")
 category = st.sidebar.selectbox("Category Selection", ["All Apparels", "Dresses", "Full Costumes"])
 show_merchant_intel = st.sidebar.checkbox("🔒 Show My Dropship Margins", value=False)
 
-# Margin Calculation Engine
 if show_merchant_intel:
     st.sidebar.markdown("### 💸 Profit Breakdown")
     df = pd.DataFrame(inventory)
     df['Net Profit'] = df['retail_price'] - df['supplier_cost']
     st.sidebar.dataframe(df[['name', 'supplier_cost', 'retail_price', 'Net Profit']])
 
-# Filter logic matching selection
 filtered_items = inventory if category == "All Apparels" else [i for i in inventory if i['tags'] == category]
 
 # 4. Display Products in Columns
@@ -89,12 +89,37 @@ for idx, item in enumerate(filtered_items):
         st.image(item["img"], use_container_width=True)
         st.markdown(f"### {item['name']}")
         
-        # Display available sizes beautifully
+        # 📐 EXPANDABLE SIZE GUIDE
+        with st.expander("📐 View Size Guide & Measurements"):
+            st.image(item["size_guide_img"], use_container_width=True)
+            st.caption("Please review carefully! Costumes run true to size but offer form-fitting styles.")
+        
         size_str = " | ".join(item["sizes"])
         st.markdown(f"**Sizes Available:** `{size_str}`")
-        
         st.markdown(f'<p class="price-text">${item["retail_price"]:.2f}</p>', unsafe_allow_html=True)
         
-        # Free Stripe / Payment link connector
         st.link_button("⚡ Claim This Look", item["checkout_url"])
         st.markdown('</div>', unsafe_allow_html=True)
+
+# 5. POLICY BOTTOM FOOTER
+st.write("---")
+policy_tab1, policy_tab2 = st.tabs(["📦 Shipping Policy", "🛡️ Return & Refund Policy"])
+
+with policy_tab1:
+    st.markdown("""
+    ### **Shipping Information**
+    * **Processing Time:** All orders are processed and prepared within **2-5 business days** before dispatch.
+    * **Delivery Estimates:** Because we source our boutique collection globally to offer you the best prices, standard shipping typically takes **7-15 business days** after processing. 
+    * **Tracking:** You will receive a tracking link via email as soon as your package is scanned by the carrier.
+    * *Note: Please place your orders early to ensure guaranteed delivery ahead of Halloween night!*
+    """)
+
+with policy_tab2:
+    st.markdown("""
+    ### **Returns & Refund Policy**
+    We want you to look spectacular in your seasonal look! Please read our policy carefully:
+    * **30-Day Window:** You have **30 days** from the date of delivery to request a return if your item arrives damaged, defective, or incorrect.
+    * **Item Condition:** To qualify for a return, your costume must be unworn, unwashed, with tags attached, and in its original packaging.
+    * **Sizing Policy:** Because our collection features precise sizing dimensions, we do not accept refunds for ordering the incorrect size. Please consult our **Live Size Guide** on the product card before claiming your look!
+    * **How to Start a Return:** Contact our support email with your order number and clear photos of any product defects to initiate a return label layout.
+    """)
